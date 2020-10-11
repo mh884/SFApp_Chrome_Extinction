@@ -1,0 +1,21 @@
+.FS-badge{
+    background-image: url(chrome-extension://phgbjbibdkflhdmdcbdhleehmnmbbcej/resource/img/Formstack_Mark.png);
+    background-size: 35px;
+    width: 35px;
+    height: 35px;
+    z-index: 999999;
+    position: fixed;
+    left: 60%;
+    top: 40px;
+    opacity: 0.6;
+    cursor: pointer;
+    background-repeat: no-repeat;
+}
+
+
+.FS-badge:hover{
+    opacity: 0.9;
+    width: 40px;
+    height: 40px;
+    background-size: 40px;
+}

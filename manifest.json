@@ -1,0 +1,56 @@
+{
+  "manifest_version": 2,
+  "name": "SFApp Chrome Extension",
+  "short_name" : "SFApp Chrome Extension",
+  "description": "SFApp Check Heath",
+  "version": "0.0.1",
+  "author":{
+    "name":"Mohammed Al-said"
+  },
+  "permissions": [
+    "tabs",
+    "storage",
+    "cookies",
+    "https://*.salesforce.com/*",
+    "https://*.force.com/*"
+  ],
+  "web_accessible_resources": [
+    "healthCheck.html",
+    "options.html",
+    "resource/img/*"
+  ],
+  "browser_action": {
+    "default_icon": "resource/img/Formstack_Mark.png",
+    "default_popup": "popup.html",
+    "default_title": "SFApp Chrome Extension"
+  },
+  "icons": { 
+    "16": "resource/img/Formstack_Mark.png",
+    "48": "resource/img/Formstack_Mark@2x.png",
+    "128": "resource/img/Formstack_Mark@3x.png" 
+  },
+  "content_scripts": [
+    {
+      "run_at": "document_end",
+      "matches": ["https://*.force.com/*","https://*.salesforce.com/*"],
+      "all_frames":false,
+      "js": [
+        "source/constants.js",
+        "source/utils.js",
+        "source/content.js"
+      ],
+      "css" : [
+        "resource/css/content.css"
+      ]
+    }
+  ],
+  "background": {
+    "scripts": [
+      "source/constants.js",
+      "source/utils.js",
+      "source/background.js"
+    ],
+    "persistent" : true
+  },
+  "options_page": "options.html"
+}
