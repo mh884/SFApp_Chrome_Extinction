@@ -2,8 +2,8 @@
   "manifest_version": 2,
   "name": "SFApp Chrome Extension",
   "short_name" : "SFApp Chrome Extension",
-  "description": "SFApp Check Heath",
-  "version": "0.0.1",
+  "description": "SFApp",
+  "version": "0.0.2",
   "author":{
     "name":"Mohammed Al-said"
   },
@@ -37,7 +37,8 @@
       "js": [
         "source/constants.js",
         "source/utils.js",
-        "source/content.js"
+        "source/content.js",
+        "source/fromEditorHelper.js"
       ],
       "css" : [
         "resource/css/content.css"

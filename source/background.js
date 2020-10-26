@@ -7,7 +7,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
     if(!sender.tab && request.tab) sender.tab = request.tab;
 
-    if(request.action === $Constants.MESSAGES.GET_ORG_ID_BKG){
+    if(request.action === window.$Constants.MESSAGES.GET_ORG_ID_BKG){
         //gets caller page's "sid" cookie (to get organization ID)
         chrome.cookies.getAll({
             "name":"sid",

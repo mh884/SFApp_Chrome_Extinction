@@ -43,7 +43,7 @@
 
 
     //first session info request
-    chrome.runtime.sendMessage({action: $Constants.MESSAGES.GET_ORG_ID_BKG}, responseHandler);
+    chrome.runtime.sendMessage({action: window.$Constants.MESSAGES.GET_ORG_ID_BKG}, responseHandler);
     
     //this interval is necessary because LEX doesn't always refreshes the page when
     //moving in the LEX app, so we need to trigger the data retrievement periodically,
@@ -52,7 +52,7 @@
         //if current url has not changed since last execution, returns
         if(_currentUrl === window.location.href) return;
 
-        chrome.runtime.sendMessage({action: $Constants.MESSAGES.GET_ORG_ID_BKG}, responseHandler);
+        chrome.runtime.sendMessage({action: window.$Constants.MESSAGES.GET_ORG_ID_BKG}, responseHandler);
 
         //resets current url var
         _currentUrl = window.location.href;
