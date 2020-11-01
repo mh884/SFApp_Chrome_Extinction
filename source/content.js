@@ -13,7 +13,21 @@
     
     //stores current url: triggers content script only on "url" change
     var _currentUrl = window.location.href;
-
+    var fsModal = $(`<div class="modal" id='fsModel' tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-dialog-scrollabl modal-xl" role="document">
+                <div class="modal-content" style="height: 500px;">
+                    <div class="modal-header">
+                    <h3 class="modal-title">Rules</h3>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                    </div>
+                    <div class="modal-body">
+                        <iframe style="width: 100%; height: 100%; border: none;" src="">
+                    </div>
+                </div><!-- /.modal-content -->
+                </div><!-- /.modal-dialog -->
+                </div>`);
     //handler for the response to background message (to get a session id)
     var responseHandler = function(message){
 
@@ -30,14 +44,25 @@
         
         appContainer = document.createElement('div');
         appContainer.id = randomCmpId;
-        appContainer.title = 'Double click to show all App health check';
-        appContainer.className = 'FS-badge';
+        appContainer.title = 'Click to show all Rules';
+        appContainer.className = 'fs-badge';
         window.document.body.appendChild(appContainer);
+        var url = $Utils.getHealthCheckURL(message.session.domainAPI,
+            message.session.sid,
+            objectId);
 
+
+        fsModal.find('iframe').attr('src',url);
+        window.document.body.appendChild(fsModal[0]);
         appContainer.addEventListener('click', function(evt){
-            window.open($Utils.getHealthCheckURL(message.session.domainAPI,
-                message.session.sid,
-                objectId));
+
+
+            $("#fsModel").modal("show");
+            $("#fsModel").draggable({
+                handle: ".modal-header"
+            }); 
+            $("#fsModel .modal-content").resizable();
+            $('#fsModel iframe').attr('src',url);
         });
     };
 

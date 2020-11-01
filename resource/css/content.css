@@ -1,4 +1,4 @@
-.FS-badge{
+.fs-badge{
     background-image: url(chrome-extension://aifekgaemfegllkddbgghjekciloadgm/resource/img/Formstack_Mark.png);
     background-size: 35px;
     width: 35px;
@@ -13,9 +13,30 @@
 }
 
 
-.FS-badge:hover{
+.fs-badge:hover{
     opacity: 0.9;
     width: 40px;
     height: 40px;
     background-size: 40px;
+}
+.ruleContainer{
+    margin-bottom: 36px; 
+    border-bottom-style: ridge;
+}
+.modal-header {
+    cursor: move;
+}
+
+.modal-body {
+    position: relative;
+    overflow-y: auto;
+    min-height: 300px;
+    max-height: none;
+    padding: 15px;
+}
+
+.container #RulesContainer{
+    
+    max-width: 90%;
+
 }

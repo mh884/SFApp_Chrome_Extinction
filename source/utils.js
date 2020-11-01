@@ -502,7 +502,7 @@ window.$Utils = window.$Utils || (function(){
          * @objectId: salesforce object ID
          */
         getHealthCheckURL: function(domainAPI, sessionId, objectId){
-            var healthCheckURL = chrome.extension.getURL('fromEditorHelper.html');
+            var healthCheckURL = chrome.extension.getURL('rules.html');
             healthCheckURL += '?surl='
                 + encodeURIComponent(domainAPI)
                 + '&sid='
