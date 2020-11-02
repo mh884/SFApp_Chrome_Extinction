@@ -3,28 +3,24 @@
  * @link
  * @description appHealthCheck controller: Check all Formstack Remote site setting refresh token and CSP trust site
  */
-$(function  () {
+window.rule = window.rule || (function  () {
 "use strict";
-
- 
-
-
   var helper = {
     optionHandler: function(element, otherFileValue) {
       var optionItem;
         if (element.hasOwnProperty('dataItems')) {
         var options = element.dataItems.item;
-          optionItem = "<td><table>" ;
+          optionItem = "<td data='options'><table>" ;
           for (let index = 0; index < options.length; index++) {
             const option = options[index];
-            optionItem += "<tr><td>" + option + "</td></tr>";
+            optionItem += "<tr><td data-value='"+option+"'>" + option + "</td></tr>";
         }
         optionItem += "</td></table>" ;
         } else {
         if(element.hasOwnProperty('operand2') || (element.hasOwnProperty('other') && element.other._isdynamic != "true")){
-          optionItem = $("<td>" + element.operand2.__text + "</td>");
+          optionItem = $("<td data-value ='"+element.operand2.__text+"'>" + element.operand2.__text + "</td>");
         }else if(element.hasOwnProperty('other') && element.other._isdynamic == "true"){
-          optionItem = $("<td>" + element.target.__text + "</td>");
+          optionItem = $("<td data-value ='"+element.target.__text+"'>" + element.target.__text + "</td>");
         }
       }
       otherFileValue.append(optionItem);
@@ -38,30 +34,25 @@ $(function  () {
       return color;
     },
     
-    ifAllAnyTrHandler :function( conditionElement, rowColor) {
+    conditionRowHandler :function( conditionElement, rowColor) {
       var otherFileValue = $("<td></td>");
       helper.optionHandler(conditionElement, otherFileValue);
-      var ifAllAnyTr = 
+      var conditionRow = 
         "<tr style='background-color:"+rowColor+"'><td></td>" +
-          "<td>" +
-          conditionElement.operand1 +
-          "</td>" +
+          helper.getTargetFieldNameTextCol(conditionElement.operand1 )+
           "<td>" +
           conditionElement._operator +
           "</td>" +
           otherFileValue[0].innerHTML+
           "</tr>";
-        
-    
-      return ifAllAnyTr;
+      return conditionRow;
     },
-    ifAllAnyOperationTrHandler:function name(section, rowColor) {
-      return "<tr style='background-color:"+rowColor+"'><td>" +
-      section._index +" "+
-      section._op +
+    conditionOperationRowHandler:function name(section, rowColor) {
+      return "<tr style='background-color:"+rowColor+"'><td> <b>" +
+      "<span style='text-transform:uppercase'>"+section._op + '</span>'+
       " IF " +
-      section._condrule +
-      "</td></tr>" ;
+      section._condrule + "<br/> of the following is true"+
+      "</b></td></tr>" ;
     },
     convertXMLToJSON:function(rulesRecords) {
       var rules = [];
@@ -79,29 +70,29 @@ $(function  () {
         '<th scope="col">Field Name</th>' +
         '<th scope="col">Operator</th>' +
         '<th scope="col">Value</th>' +
-        '</tr></thead><tbody id = "condition"></tbody></table>'
+        '</tr></thead><tbody id= "condition"></tbody></table>'
       );
     },
-    getSubIfAllAnyConditionHandler:function (section, condition, callbackHTML) {
+    getSubConditionHandler:function (section, condition, callbackHTML) {
       var rowColor = helper.getRandomColor();
-      var rowOperation = helper.ifAllAnyOperationTrHandler(section,rowColor);
+      var rowOperation = helper.conditionOperationRowHandler(section,rowColor);
       callbackHTML.find("tbody#condition").append(rowOperation);
       for (let conditionIndex = 0; conditionIndex < condition.length; conditionIndex++) {
         const conditionElement = condition[conditionIndex];
-        var ifAllAnyTr = helper.ifAllAnyTrHandler(conditionElement,rowColor);
-        callbackHTML.find("tbody#condition").append(ifAllAnyTr);
+        var conditionRow = helper.conditionRowHandler(conditionElement,rowColor);
+        callbackHTML.find("tbody#condition").append(conditionRow);
       }
     },
-    getIfAllAnyConditions:function(section, condition, callbackHTML){
+    conditionsHandler:function(section, condition, callbackHTML){
       if (Array.isArray(condition)) {
-        helper.getSubIfAllAnyConditionHandler(section, condition, callbackHTML); 
+        helper.getSubConditionHandler(section, condition, callbackHTML); 
       } else {
         var rowColor = helper.getRandomColor();
-        var rowOperation = helper.ifAllAnyOperationTrHandler(section,rowColor);
+        var rowOperation = helper.conditionOperationRowHandler(section,rowColor);
         callbackHTML.find("tbody#condition").append(rowOperation);
 
-        var ifAllAnyTr = helper.ifAllAnyTrHandler(condition, rowColor);
-        callbackHTML.find("tbody#condition").append(ifAllAnyTr);
+        var conditionRow = helper.conditionRowHandler(condition, rowColor);
+        callbackHTML.find("tbody#condition").append(conditionRow);
       }
     },
     createThenConditionActionTable:function(){
@@ -112,10 +103,10 @@ $(function  () {
     createThenContainer:function() {
       return  $("<div style='margin-left: 10px;'><h3>Then</h3></div>");
     },
-    getTargetTextTd:function(thenElementAction) {
-      return $("<td>" + thenElementAction.target.__text + "</td>");
+    getTargetFieldNameTextCol:function(fieldname) {
+      return "<td data-value='"+fieldname+"'>" + fieldname+ "</td>";
     },
-    PopulateValueHandler:function(thenElementAction, otherFileValue) {
+    populateValueHandler:function(thenElementAction, otherFileValue) {
       if (thenElementAction.other._dtType == "") {
         otherFileValue.append(thenElementAction.other.__text);
       } else if (thenElementAction.other._dtType == "setpicklist" || thenElementAction.other._dtType == "picklist") {
@@ -124,7 +115,7 @@ $(function  () {
       return otherFileValue;
     },
     thenActionHandler:(thenAction, thenContainer) => {
-var conditionActionTable = helper.createThenConditionActionTable();
+      var conditionActionTable = helper.createThenConditionActionTable();
       var thenActionLength = 0;
       if (Array.isArray(thenAction)) {
         thenActionLength = thenAction.length;
@@ -140,21 +131,21 @@ var conditionActionTable = helper.createThenConditionActionTable();
           thenElementAction = thenAction[thenIndex];
         }
 
-        var actionRow = helper.thenActionRow(thenElementAction);
+        var actionRow = helper.createActionRow(thenElementAction);
         conditionActionTable.find("tbody#conditionAction").append(actionRow);
         thenContainer.append(conditionActionTable);
       }
-},
-    thenActionRow:function(thenElementAction) {
+  },
+    createActionRow:function(thenElementAction) {
       var rowColor ="#132f8021";
-      var actionRow = $("<tr style='background-color:"+rowColor+"'>"  + "<td>" + thenElementAction.action + "</td>" + "</tr>");
+      var actionRow = $("<tr  data='conditionRow' style='background-color:"+rowColor+"'>"  + "<td data-action='"+thenElementAction.action+"'>" + thenElementAction.action + "</td>" + "</tr>");
 
       var targetFieldName = "";
       var otherFieldValue = $("<td></td>");
 
       if (thenElementAction.other._dtType == "setpicklist" && (thenElementAction.other._isdynamic == "false" || thenElementAction.other._populate == "false")) {
         // Field name
-        targetFieldName = helper.getTargetTextTd(thenElementAction);
+        targetFieldName = helper.getTargetFieldNameTextCol(thenElementAction.target.__text);
 
         // Value Options
         helper.optionHandler(thenElementAction, otherFieldValue);
@@ -164,27 +155,58 @@ var conditionActionTable = helper.createThenConditionActionTable();
       } else if (thenElementAction.other._isdynamic == "false" || thenElementAction.other._populate == "true") {
         // Field name
         // Action: populate
-        targetFieldName = helper.getTargetTextTd(thenElementAction);
+        targetFieldName = helper.getTargetFieldNameTextCol(thenElementAction.target.__text);
 
         // Value
-        helper.PopulateValueHandler(thenElementAction, otherFieldValue);
+        helper.populateValueHandler(thenElementAction, otherFieldValue);
 
         actionRow.append(targetFieldName);
         actionRow.append(otherFieldValue);
       } else if (thenElementAction.other._isdynamic == "" || thenElementAction.other._populate == "false") {
         // Field name
         // Action: required / not required
-        targetFieldName = helper.getTargetTextTd(thenElementAction);
+        targetFieldName = helper.getTargetFieldNameTextCol(thenElementAction.target.__text);
 
         actionRow.append(targetFieldName);
       }
       return actionRow;
     },
-    createThenRows:function(thenAction) {
+    getActionRows:function(thenAction) {
       var thenContainer = helper.createThenContainer();
       helper.thenActionHandler(thenAction, thenContainer);
      
       return thenContainer;
+    },
+    getConditionRows:function name(sections) {
+      var ruleContainerDiv = $("<div class='ruleContainer' style='margin-bottom: 36px; border-bottom-style: ridge;'></div>");
+
+      // Field Name/ Operation / value
+      var conditionTable = helper.createConditionTable();
+
+      var sectionLength;
+      if (Array.isArray(sections)) {
+        sectionLength = sections.length;
+      } else {
+        sectionLength = 1;
+      }
+      for (var sectionIndex = 0; sectionIndex < sectionLength; sectionIndex++) {
+        var section;
+        var condition;
+        if (sections.hasOwnProperty("condition")) {
+          condition = sections.condition;
+          section = sections;
+        } else {
+          section = sections[sectionIndex];
+          condition = section.condition;
+        }
+
+        // IF All/Any
+        //creates a new row for each condition
+        helper.conditionsHandler(section, condition, conditionTable);
+        ruleContainerDiv.append(conditionTable);
+      }
+
+      return ruleContainerDiv;
     },
     getRulesTable:function (rulesRecords) {
       var rules = helper.convertXMLToJSON(rulesRecords);
@@ -192,44 +214,54 @@ var conditionActionTable = helper.createThenConditionActionTable();
       for (var rulesIndex = 0; rulesIndex < rules.length; rulesIndex++) {
         const rule = rules[rulesIndex].rule;
         // IF section
-        var sections = rule.if.section;
-        var ruleContainerDiv = $("<div class='ruleContainer' style='margin-bottom: 36px; border-bottom-style: ridge;'></div>");
-  
-        // Field Name/ Operation / value
-        var conditionTable = helper.createConditionTable();
-  
-        var sectionLength;
-        if (Array.isArray(sections)) {
-          sectionLength = sections.length;
-        } else {
-          sectionLength = 1;
-        }
-        var thenContainer;
-        for (var sectionIndex = 0; sectionIndex < sectionLength; sectionIndex++) {
-          var section;
-          var condition;
-          if (sections.hasOwnProperty("condition")) {
-            condition = sections.condition;
-            section = sections;
-          } else {
-            section = sections[sectionIndex];
-            condition = section.condition;
-          }
-  
-          // IF All/Any
-          //creates a new row for each condition
-          helper.getIfAllAnyConditions(section, condition, conditionTable);
-          ruleContainerDiv.append(conditionTable);
-  
-          // Then
-          thenContainer = helper.createThenRows(rule.then.result);
-         
-        }
-        ruleContainerDiv.append(thenContainer);
+        var ruleContainerDiv = helper.getConditionRows(rule.if.section);
+        // Then section
+        var actionContainer = helper.getActionRows(rule.then.result);
+        ruleContainerDiv.append(actionContainer);
         rulesContainer.append(ruleContainerDiv);
       }
       return rulesContainer;
-    }
+    },
+    getRuleContainer:function(element){
+      if(element.className == 'ruleContainer')
+      {
+        return element;
+      }
+      console.log(element);
+      if(typeof(element.parentNode) != "undefined"){
+        return helper.getRuleContainer(element.parentNode);
+      }else{
+        return "ERROR";
+      }
+    },
+    search:function(searchText){
+      helper.tagMatchedSearch(searchText);
+      helper.hideUnMatchedSearch();
+    },
+    tagMatchedSearch:function(searchText) {
+      // hide all rows
+      var hideNotMatchedRuleContainers = [];
+      // show all row with search text
+      var dataValue = document.querySelectorAll('td[data-value*="'+searchText+'"]');
+      for (let colIndex = 0; colIndex < dataValue.length; colIndex++) {
+        var element = dataValue[colIndex];
+        if(element.getAttribute('data-value') == searchText){
+          var ruleContainer = helper.getRuleContainer(element);
+          if(element.getAttribute('matched') == null){
+            ruleContainer.setAttribute('matched','matched');
+          }
+        }
+      }
+    },
+    hideUnMatchedSearch:function(){
+      var rulesContainer = document.getElementsByClassName('ruleContainer');
+      for (let ruleIndex = 0; ruleIndex < rulesContainer.length; ruleIndex++) {
+        const element = rulesContainer[ruleIndex];
+        if(element.getAttribute('matched') == null){
+          element.classList.add('hideRule');
+        }
+      }
+    },
   };
 
 
@@ -248,16 +280,16 @@ var conditionActionTable = helper.createThenConditionActionTable();
           return;
         }
     
-        var rulesContainer = $("#RulesContainer");
+        var rulesContainer = $("#rulesContainer");
         var rulesRecords = data.records;
   
         // create div text to show condition
         // create table header to show all the rule condition operand
         rulesContainer.append(helper.getRulesTable(rulesRecords));
-  
+        helper.search('Mohammed');
       });
     }
   }
 
   run();
-});
+})();

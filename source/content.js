@@ -23,6 +23,7 @@
                     </button>
                     </div>
                     <div class="modal-body">
+                    <input type='button' onClick='window.rule.run()' text='Search'/>
                         <iframe style="width: 100%; height: 100%; border: none;" src="">
                     </div>
                 </div><!-- /.modal-content -->
