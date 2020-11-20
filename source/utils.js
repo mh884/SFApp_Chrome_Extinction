@@ -6,7 +6,7 @@
 window.$Utils = window.$Utils || (function(){
     "use strict";
     return {
-
+ // Auth Flow Start
         /**
          * Get a param value from the tab's URL
          * @name: parameter's name 
@@ -15,7 +15,6 @@ window.$Utils = window.$Utils || (function(){
             return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [null, ''])[1].replace(/\+/g, '%20')) || null;
         },
 
-        
         /*
          * Parse current page URL to check if the page is a OAuth result page
          * and if so, return an object containing all OAuth token info
@@ -33,7 +32,7 @@ window.$Utils = window.$Utils || (function(){
             if(code){
                 //web server flow
                 var url = state+'/services/oauth2/token';
-                var body = ('grant_type=authorization_code&client_id='+encodeURIComponent($Constants.CLIENT_ID)
+                var body = ('grant_type=authorization_code&client_id='+encodeURIComponent(window.$Constants.CLIENT_ID)
                         +'&redirect_uri='+encodeURIComponent('chrome-extension://'+chrome.runtime.id+'/options.html')
                         +'&code='+encodeURIComponent(code));
                 
@@ -90,7 +89,7 @@ window.$Utils = window.$Utils || (function(){
          */
         doRefreshToken: function(serverUrl, refToken, callback){
             var url = serverUrl+'/services/oauth2/token';
-            var body = ('grant_type=refresh_token&client_id='+encodeURIComponent($Constants.CLIENT_ID)
+            var body = ('grant_type=refresh_token&client_id='+encodeURIComponent(window.$Constants.CLIENT_ID)
                     +'&refresh_token='+encodeURIComponent(refToken));
             
             $.ajax({
@@ -142,19 +141,7 @@ window.$Utils = window.$Utils || (function(){
          * @callback: function(@Object(error), @Object(userInfo))
          */
         getUserInfo: function(userUrl, accessToken, callback){
-            $.ajax({
-                url: userUrl,
-                method: 'GET',
-                headers:{
-                    'Authorization' : 'Bearer '+accessToken,
-                },
-                success: function(result,status,xhr){
-                    return callback && callback(null, result);
-                },
-                error: function(data){
-                    return callback && callback(data);
-                }
-            });
+            $Utils.restApiGET(userUrl,accessToken,callback);
         },
 
         /*
@@ -166,7 +153,7 @@ window.$Utils = window.$Utils || (function(){
             //User Agent Flow
             var url = server+'/services/oauth2/authorize?response_type=code'
                     +'&client_id='
-                        +$Constants.CLIENT_ID
+                        +window.$Constants.CLIENT_ID
                     +'&state='
                         +encodeURIComponent(server)
                     //only for web server
@@ -180,7 +167,7 @@ window.$Utils = window.$Utils || (function(){
             window.location.href = url;
         },
 
-
+ // Auth Flow End
         /**
          * Lightning Experience enabled
          * @url: url to get the result (if not passed window.location is used)
@@ -395,26 +382,12 @@ window.$Utils = window.$Utils || (function(){
          */
         describeGlobal: function(serverUrl, sessionId, callback){
 
-            var _url = 'https://'+serverUrl+'/services/data/v'+$Constants.API_LEVEL+'/sobjects/';
+            var _url = 'https://'+serverUrl+'/services/data/v'+window.$Constants.API_LEVEL+'/sobjects/';
             var _headers = {
                 'Authorization':'Bearer '+sessionId
             };
 
-            $.ajax({
-                type: 'GET',
-                cache: false,
-                url:_url,
-                headers: _headers,
-                success: function(data, textStatus, request){
-                    return callback && callback(null, data);
-                },
-                error: function (request, textStatus, errorThrown) {
-                    if(request && request.responseText){
-                        return callback && callback(request.responseText);
-                    }
-                    return callback && callback(errorThrown);
-                },
-            });
+            $Utils.restApiGET(_url,sessionId,callback);
         },
 
         /**
@@ -444,7 +417,7 @@ window.$Utils = window.$Utils || (function(){
                     return callback && callback('Invalid object: '+keyPrefix+' not found');
                 }
                 var _url = 'https://'+serverUrl + '/services/data/v'
-                    + $Constants.API_LEVEL 
+                    + window.$Constants.API_LEVEL 
                     + '/sobjects/'
                     + objectAPIName
                     + '/'
@@ -453,22 +426,7 @@ window.$Utils = window.$Utils || (function(){
                 var _headers = {
                     'Authorization':'Bearer '+sessionId
                 };
-
-                $.ajax({
-                    type: 'GET',
-                    cache: false,
-                    url:_url,
-                    headers: _headers,
-                    success: function(data, textStatus, request){
-                        return callback && callback(null, data);
-                    },
-                    error: function (request, textStatus, errorThrown) {
-                        if(request && request.responseText){
-                            return callback && callback(request.responseText);
-                        }
-                        return callback && callback(errorThrown);
-                    },
-                });
+                $Utils.restApiGET(_url,sessionId,callback);
             });
         },
 
@@ -484,11 +442,37 @@ window.$Utils = window.$Utils || (function(){
             var _url = 'https://'
                 + serverUrl
                 + '/services/data/v'
-                + $Constants.API_LEVEL 
+                + window.$Constants.API_LEVEL 
                 + '/sobjects/'
                 + objectAPIName
                 + '/describe';
 
+                $Utils.restApiGET(_url,sessionId,callback);
+        },
+        /**
+         * Get 
+         * @param {string} serverUrl
+         * @param {string} query 
+         * @param {string} sessionId 
+         * @param {function(error, object)} callback 
+         */
+        query:function(query,serverUrl,sessionId,callback){
+            var _url = 'https://'
+            + serverUrl
+            + '/services/data/v'
+            + window.$Constants.API_LEVEL 
+            + '/query/?q='
+            + encodeURIComponent(query);
+
+            $Utils.restApiGET(_url,sessionId,callback);
+        },
+        /**
+         * GET API
+         * @ApiUrl: Api url
+         * @sessionId: valid session id 
+         * @callback function(error, object)
+         */
+        restApiGET:function(ApiUrl,sessionId,callback){
             var _headers = {
                 'Authorization':'Bearer '+sessionId
             };
@@ -496,7 +480,7 @@ window.$Utils = window.$Utils || (function(){
             $.ajax({
                 type: 'GET',
                 cache: false,
-                url:_url,
+                url:ApiUrl,
                 headers: _headers,
                 success: function(data, textStatus, request){
                     return callback && callback(null, data);
@@ -518,13 +502,12 @@ window.$Utils = window.$Utils || (function(){
          * @objectId: salesforce object ID
          */
         getHealthCheckURL: function(domainAPI, sessionId, objectId){
-            var healthCheckURL = chrome.extension.getURL('healthCheck.html');
+            var healthCheckURL = chrome.extension.getURL('rules.html');
             healthCheckURL += '?surl='
                 + encodeURIComponent(domainAPI)
                 + '&sid='
                 + encodeURIComponent(sessionId)
-                + '&id='
-                + encodeURIComponent(objectId);
+                + '&id=' + encodeURIComponent(objectId);
             return healthCheckURL;
         }
 

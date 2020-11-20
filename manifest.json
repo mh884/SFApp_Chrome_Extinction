@@ -2,8 +2,8 @@
   "manifest_version": 2,
   "name": "SFApp Chrome Extension",
   "short_name" : "SFApp Chrome Extension",
-  "description": "SFApp Check Heath",
-  "version": "0.0.1",
+  "description": "SFApp",
+  "version": "0.0.2",
   "author":{
     "name":"Mohammed Al-said"
   },
@@ -15,8 +15,7 @@
     "https://*.force.com/*"
   ],
   "web_accessible_resources": [
-    "healthCheck.html",
-    "options.html",
+    "*.html",
     "resource/img/*"
   ],
   "browser_action": {
@@ -35,12 +34,18 @@
       "matches": ["https://*.force.com/*","https://*.salesforce.com/*"],
       "all_frames":false,
       "js": [
+        "resource/bin/jquery-3.5.1.min.js",
+        "resource/bin/jquery-ui.js",
+        "resource/bin/bootstrap.js",
         "source/constants.js",
         "source/utils.js",
-        "source/content.js"
+        "source/content.js",
+        "source/rules.js"
       ],
       "css" : [
-        "resource/css/content.css"
+        "resource/css/content.css",
+        "resource/css/bootstrap.css",
+        "resource/css/jquery-ui.min.css"
       ]
     }
   ],
