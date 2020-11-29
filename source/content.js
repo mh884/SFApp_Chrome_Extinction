@@ -23,7 +23,6 @@
                     </button>
                     </div>
                     <div class="modal-body">
-                    <input type='button' onClick='window.rule.run()' text='Search'/>
                         <iframe style="width: 100%; height: 100%; border: none;" src="">
                     </div>
                 </div><!-- /.modal-content -->
@@ -42,16 +41,15 @@
         }
 
         if(!objectId) return;
-        
         appContainer = document.createElement('div');
         appContainer.id = randomCmpId;
         appContainer.title = 'Click to show all Rules';
         appContainer.className = 'fs-badge';
+        appContainer.style.backgroundImage = "url(chrome-extension://" + chrome.runtime.id + "/resource/img/Formstack_Mark.png)";
         window.document.body.appendChild(appContainer);
         var url = $Utils.getHealthCheckURL(message.session.domainAPI,
             message.session.sid,
             objectId);
-
 
         fsModal.find('iframe').attr('src',url);
         window.document.body.appendChild(fsModal[0]);

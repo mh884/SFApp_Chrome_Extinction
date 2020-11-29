@@ -234,7 +234,8 @@ window.rule = window.rule || (function  () {
         return "ERROR";
       }
     },
-    search:function(searchText){
+    search:function(searchElement){
+      var searchText = $(searchElement).val();
       helper.tagMatchedSearch(searchText);
       helper.hideUnMatchedSearch();
     },
@@ -286,10 +287,12 @@ window.rule = window.rule || (function  () {
         // create div text to show condition
         // create table header to show all the rule condition operand
         rulesContainer.append(helper.getRulesTable(rulesRecords));
-        helper.search('Mohammed');
       });
     }
   }
-
-  run();
+run();
+  return{
+    search:'search',
+    run:'run',
+  }
 })();
