@@ -8,7 +8,14 @@
      </style>
     </head>
     <body>
-      <input type='text' onchange='window.rule.search(this)' width:"100%" PlaceHolder='Search'/>
+      <div class="container ">
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" id="txtSearch" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="button" id="button-search" >Search</button>
+          </div>
+        </div>
+     </div>  
       <div class="jumbotron jumbotron-fluid">
        
       <div id='rulesContainer' class="container"></div>

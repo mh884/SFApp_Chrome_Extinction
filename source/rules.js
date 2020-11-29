@@ -234,8 +234,8 @@ window.rule = window.rule || (function  () {
         return "ERROR";
       }
     },
-    search:function(searchElement){
-      var searchText = $(searchElement).val();
+    search:function(){
+      var searchText = $("#txtSearch").val();
       helper.tagMatchedSearch(searchText);
       helper.hideUnMatchedSearch();
     },
@@ -287,12 +287,18 @@ window.rule = window.rule || (function  () {
         // create div text to show condition
         // create table header to show all the rule condition operand
         rulesContainer.append(helper.getRulesTable(rulesRecords));
+
+        var buttonSearch = document.getElementById('button-search');
+        buttonSearch.addEventListener('click', function(evt){
+          window.rule.search();
+        });
+        
       });
     }
   }
 run();
   return{
-    search:'search',
-    run:'run',
+    search: helper.search,
+    run: run,
   }
 })();
