@@ -39,9 +39,9 @@ window.rule = window.rule || (function  () {
       helper.optionHandler(conditionElement, otherFileValue);
       var conditionRow = 
         "<tr style='background-color:"+rowColor+"'><td></td>" +
-          helper.getTargetFieldNameTextCol(conditionElement.operand1 )+
+          helper.getTargetFieldNameTextCol(conditionElement.operand1 ) +
           "<td>" +
-          conditionElement._operator +
+         helper.convertOperationRowToSentence(conditionElement._operator) +
           "</td>" +
           otherFileValue[0].innerHTML+
           "</tr>";
@@ -97,7 +97,11 @@ window.rule = window.rule || (function  () {
     },
     createThenConditionActionTable:function(){
       return $(
-        '<table class="table" ><thead class="table-dark"><tr>' + '<th scope="col">Action</th>' + '<th scope="col">Target Field Name</th>' + '<th scope="col">value</th>' + "</tr></thead><tbody id='conditionAction'></tbody></table>"
+        '<table class="table" ><thead class="table-dark"><tr>' + 
+        '<th scope="col">Action</th>' + 
+        '<th scope="col">Target Field Name</th>' + 
+        '<th scope="col">value</th>' + 
+        "</tr></thead><tbody id='conditionAction'></tbody></table>"
       );
     },
     createThenContainer:function() {
@@ -176,6 +180,34 @@ window.rule = window.rule || (function  () {
       helper.thenActionHandler(thenAction, thenContainer);
      
       return thenContainer;
+    },
+    convertOperationRowToSentence: function(operator){
+
+      if(operator == 'eqt'){
+        return 'is equal to';
+      }else if(operator == 'net'){
+        return 'is not equal to';
+      }else if(operator == 'lst'){
+        return 'is less than';
+      }else if(operator == 'grt'){
+        return 'is greater than';
+      }else if(operator == 'lte'){
+        return 'is less than or equal to';
+      }else if(operator == 'gte'){
+        return 'is greater than or equal to';
+      }else if(operator == 'con'){
+        return 'contains';
+      }else if(operator == 'nco'){
+        return 'does not contain';
+      }else if(operator == 'stw'){
+        return 'starts with';
+      }else if(operator == 'edw'){
+        return 'ends with';
+      }else if(operator == 'nsw'){
+        return 'does not start with';
+      }else if(operator == 'new'){
+        return 'does not end with';
+      }
     },
     getConditionRows:function name(sections) {
       var ruleContainerDiv = $("<div class='ruleContainer' style='margin-bottom: 36px; border-bottom-style: ridge;'></div>");
@@ -263,6 +295,29 @@ window.rule = window.rule || (function  () {
         }
       }
     },
+    resetSearch:function(){
+      var rulesContainer = document.getElementsByClassName('ruleContainer');
+      for (let ruleIndex = 0; ruleIndex < rulesContainer.length; ruleIndex++) {
+        const element = rulesContainer[ruleIndex];
+        element.classList.remove('hideRule');
+        if(element.getAttribute('matched') == 'matched'){
+          element.removeAttribute('matched');
+        }
+      }
+    },
+    download:function(rulesXML){
+      var rules = [];
+      for (var index = 0; index < rulesXML.length; index++) {
+        var x2js = new X2JS();
+        var xml = rulesXML[index].Rule_XML__c;
+        var document = x2js.xml2js(xml);
+        rules.push(document);
+      }
+      var stringify = JSON.stringify(rules);
+      var myFile = new Blob([stringify], {type: 'text/plain'});
+      window.URL = window.URL || window.webkitURL;
+      window.open(window.URL.createObjectURL(myFile));
+    }
   };
 
 
@@ -293,12 +348,24 @@ window.rule = window.rule || (function  () {
           window.rule.search();
         });
         
+        var buttonReset = document.getElementById('button-reset');
+        buttonReset.addEventListener('click', function(evt){
+          window.rule.resetSearch();
+        });
+
+        var buttonDownload = document.getElementById('button-download');
+        buttonDownload.addEventListener('click', function(evt){
+          window.rule.download(rulesRecords);
+        });
+
       });
     }
   }
 run();
   return{
     search: helper.search,
+    resetSearch: helper.resetSearch,
+    download: helper.download,
     run: run,
   }
 })();
