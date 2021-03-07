@@ -3,7 +3,7 @@
  * @link
  * @description appHealthCheck controller: Check all Formstack Remote site setting refresh token and CSP trust site
  */
-window.rule = window.rule || (function  () {
+window.rulesView = window.rulesView || (function  () {
 "use strict";
   var helper = {
     optionHandler: function(element, otherFileValue) {
@@ -317,6 +317,12 @@ window.rule = window.rule || (function  () {
       var myFile = new Blob([stringify], {type: 'text/plain'});
       window.URL = window.URL || window.webkitURL;
       window.open(window.URL.createObjectURL(myFile));
+    },
+    showMessage:function(message){
+      var rulesContainer = $("#rulesContainer");
+      debugger;
+      var errorMessageElement = $("<div class = 'RuleMessage'>" +message+ "</div>")
+      rulesContainer.append(errorMessageElement[0]);
     }
   };
 
@@ -332,7 +338,8 @@ window.rule = window.rule || (function  () {
   
     if(query != '' && seerverUrl != null && sessionId != null){
       $Utils.query(query, seerverUrl, sessionId, function (callback, data) {
-        if (typeof(data) == "undefined"  || data.done == false) {
+        if (typeof(data) == "undefined"  || data.done == false) {debugger;
+          window.rulesView.showMessage(callback);
           return;
         }
     
@@ -345,17 +352,17 @@ window.rule = window.rule || (function  () {
 
         var buttonSearch = document.getElementById('button-search');
         buttonSearch.addEventListener('click', function(evt){
-          window.rule.search();
+          window.rulesView.search();
         });
         
         var buttonReset = document.getElementById('button-reset');
         buttonReset.addEventListener('click', function(evt){
-          window.rule.resetSearch();
+          window.rulesView.resetSearch();
         });
 
         var buttonDownload = document.getElementById('button-download');
         buttonDownload.addEventListener('click', function(evt){
-          window.rule.download(rulesRecords);
+          window.rulesView.download(rulesRecords);
         });
 
       });
@@ -366,6 +373,7 @@ run();
     search: helper.search,
     resetSearch: helper.resetSearch,
     download: helper.download,
+    showMessage: helper.showMessage,
     run: run,
   }
 })();
