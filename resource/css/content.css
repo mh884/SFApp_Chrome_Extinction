@@ -1,5 +1,4 @@
 .fs-badge{
-    background-image: url(chrome-extension://aifekgaemfegllkddbgghjekciloadgm/resource/img/Formstack_Mark.png);
     background-size: 35px;
     width: 35px;
     height: 35px;
@@ -36,7 +35,5 @@
 }
 
 .container #rulesContainer{
-    
     max-width: 90%;
-
 }
