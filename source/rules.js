@@ -320,7 +320,6 @@ window.rulesView = window.rulesView || (function  () {
     },
     showMessage:function(message){
       var rulesContainer = $("#rulesContainer");
-      debugger;
       var errorMessageElement = $("<div class = 'RuleMessage'>" +message+ "</div>")
       rulesContainer.append(errorMessageElement[0]);
     }
@@ -338,7 +337,7 @@ window.rulesView = window.rulesView || (function  () {
   
     if(query != '' && seerverUrl != null && sessionId != null){
       $Utils.query(query, seerverUrl, sessionId, function (callback, data) {
-        if (typeof(data) == "undefined"  || data.done == false) {debugger;
+        if (typeof(data) == "undefined"  || data.done == false) {
           window.rulesView.showMessage(callback);
           return;
         }

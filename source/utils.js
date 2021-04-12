@@ -24,7 +24,7 @@ window.$Utils = window.$Utils || (function(){
          *            @isOauth: TRUE if the url contains OAuth data
          *            @OauthData: object containing OAuth error details
          */
-        parseOAuthPageUrlWebServerFlow: function(callback){debugger;
+        parseOAuthPageUrlWebServerFlow: function(callback){
             var pageUrl = window.location.href;
 
             var code = $Utils.getURLParameter('code');
@@ -87,7 +87,7 @@ window.$Utils = window.$Utils || (function(){
          * @refToken: original refresh token
          * @callback: function(@Object(error), @Object(OAuthData))
          */
-        doRefreshToken: function(serverUrl, refToken, callback){debugger;
+        doRefreshToken: function(serverUrl, refToken, callback){
             var url = serverUrl+'/services/oauth2/token';
             var body = ('grant_type=refresh_token&client_id='+encodeURIComponent(window.$Constants.CLIENT_ID)
                     +'&refresh_token='+encodeURIComponent(refToken));
@@ -148,7 +148,7 @@ window.$Utils = window.$Utils || (function(){
          * Starts OAuth flow to acquire a new refresh token
          * @server: server url (production, test, ...)
          */
-        startOAuthFlow: function(server){debugger;
+        startOAuthFlow: function(server){
             var scopes = ['web','api','refresh_token'];
             //User Agent Flow
             var url = server+'/services/oauth2/authorize?response_type=code'
