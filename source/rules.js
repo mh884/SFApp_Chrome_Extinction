@@ -255,7 +255,7 @@ window.rulesView = window.rulesView || (function  () {
       return rulesContainer;
     },
     getRuleContainer:function(element){
-      if(element.className == 'ruleContainer')
+      if(element.className.indexOf('ruleContainer') !== -1)
       {
         return element;
       }
@@ -267,7 +267,7 @@ window.rulesView = window.rulesView || (function  () {
       }
     },
     search:function(){
-      var searchText = $("#txtSearch").val();
+      var searchText = $("#txtSearch").val().trim();
       helper.tagMatchedSearch(searchText);
       helper.hideUnMatchedSearch();
     },
