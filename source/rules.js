@@ -209,35 +209,52 @@ window.rulesView = window.rulesView || (function  () {
         return 'does not end with';
       }
     },
-    getConditionRows:function name(sections) {
-      var ruleContainerDiv = $("<div class='ruleContainer' style='margin-bottom: 36px; border-bottom-style: ridge;'></div>");
+    getConditionRows:function name(rule) {
+      var ruleId = rule._id;
+      var section = rule.if.section;
+      var deleteButton = $("<button type='button' class='btn btn-danger m-2'>Delete</button>");
+      var ruleContainerDiv = $("<div class='ruleContainer' style='margin-bottom: 36px; border: ridge;'></div>");
 
       // Field Name/ Operation / value
-      var conditionTable = helper.createConditionTable();
+      var conditionTable = helper.createConditionTable(ruleId);
 
       var sectionLength;
-      if (Array.isArray(sections)) {
-        sectionLength = sections.length;
+      if (Array.isArray(section)) {
+        sectionLength = section.length;
       } else {
         sectionLength = 1;
       }
       for (var sectionIndex = 0; sectionIndex < sectionLength; sectionIndex++) {
-        var section;
+        var currentSection;
         var condition;
-        if (sections.hasOwnProperty("condition")) {
-          condition = sections.condition;
-          section = sections;
-        } else {
-          section = sections[sectionIndex];
+        if (section.hasOwnProperty("condition")) {
           condition = section.condition;
+          currentSection = section;
+        } else {
+          currentSection = section[sectionIndex];
+          condition = currentSection.condition;
         }
 
         // IF All/Any
         //creates a new row for each condition
-        helper.conditionsHandler(section, condition, conditionTable);
+        helper.conditionsHandler(currentSection, condition, conditionTable);
         ruleContainerDiv.append(conditionTable);
       }
 
+      deleteButton[0].addEventListener('click', function(evt){
+        var sessionId = $Utils.getURLParameter("sid");
+        var seerverUrl = $Utils.getURLParameter("surl");
+      
+        if(ruleId != '' && seerverUrl != null && sessionId != null){
+          $Utils.delete('Form_Rule__c', ruleId, seerverUrl, sessionId, function (callback, textStatus) {
+            if(textStatus == 'nocontent'){
+              window.rulesView.run();
+            }
+          });
+        }
+      });
+
+      ruleContainerDiv.prepend(deleteButton);
       return ruleContainerDiv;
     },
     getRulesTable:function (rulesRecords) {
@@ -246,7 +263,7 @@ window.rulesView = window.rulesView || (function  () {
       for (var rulesIndex = 0; rulesIndex < rules.length; rulesIndex++) {
         const rule = rules[rulesIndex].rule;
         // IF section
-        var ruleContainerDiv = helper.getConditionRows(rule.if.section);
+        var ruleContainerDiv = helper.getConditionRows(rule);
         // Then section
         var actionContainer = helper.getActionRows(rule.then.result);
         ruleContainerDiv.append(actionContainer);
@@ -340,9 +357,13 @@ window.rulesView = window.rulesView || (function  () {
         if (typeof(data) == "undefined"  || data.done == false) {
           window.rulesView.showMessage(callback);
           return;
+        }else  if(data.records.length == 0){
+          window.rulesView.showMessage("No Records Found");
+          return;
         }
     
         var rulesContainer = $("#rulesContainer");
+        rulesContainer.empty();
         var rulesRecords = data.records;
   
         // create div text to show condition
@@ -368,6 +389,7 @@ window.rulesView = window.rulesView || (function  () {
     }
   }
 run();
+
   return{
     search: helper.search,
     resetSearch: helper.resetSearch,

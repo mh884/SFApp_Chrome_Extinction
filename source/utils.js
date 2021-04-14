@@ -495,6 +495,53 @@ window.$Utils = window.$Utils || (function(){
             });
         },
 
+
+        /**
+         * Delete 
+         * @param {string} objectName 
+         * @param {string} objectId 
+         * @param {string} serverUrl
+         * @param {string} sessionId 
+         * @param {function(error, object)} callback 
+         */
+        delete:function(objectName, objectId, serverUrl, sessionId, callback){
+        var _url = 'https://'
+        + serverUrl
+        + '/services/data/v'
+        + window.$Constants.API_LEVEL 
+        + '/sobjects/'+ objectName + '/' + objectId;
+
+        $Utils.restApiDelete(_url,sessionId,callback);
+        },
+        /**
+        * Delete API
+        * @ApiUrl: Api url
+        * @sessionId: valid session id 
+        * @callback function(error, object)
+        */
+       restApiDelete:function(ApiUrl,sessionId,callback){
+           var _headers = {
+               'Authorization':'Bearer '+sessionId
+           };
+
+           $.ajax({
+               type: 'Delete',
+               cache: false,
+               url:ApiUrl,
+               headers: _headers,
+               success: function(data, textStatus, request){
+                   return callback && callback(null, textStatus);
+               },
+               error: function (request, textStatus, errorThrown) {
+                  
+                   if(request && request.responseText){
+                       return callback && callback(request.responseText);
+                   }
+                   return callback && callback(errorThrown);
+               },
+           });
+       },
+
         /**
          * Creates the "HealthCheck" url
          * @domainAPI: server url
