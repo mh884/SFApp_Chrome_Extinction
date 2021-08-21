@@ -232,7 +232,7 @@ window.rulesView = window.rulesView || (function  () {
           currentSection = section;
         } else {
           currentSection = section[sectionIndex];
-          cond  ition = currentSection.condition;
+          condition = currentSection.condition;
         }
 
         // IF All/Any
@@ -256,6 +256,7 @@ window.rulesView = window.rulesView || (function  () {
                   }
                 });
               }
+              helper.resetRules()
               console.log('rule ' + ruleId + ' was deleted.');
             }else{
               console.log('rule ' + ruleId + ' was not deleted.');
@@ -283,6 +284,9 @@ window.rulesView = window.rulesView || (function  () {
       var rules = helper.convertXMLToJSON(rulesRecords);
       var rulesContainer = $('<div></div>');
       for (var rulesIndex = 0; rulesIndex < rules.length; rulesIndex++) {
+        if(rules[rulesIndex] == null){
+          continue;
+        }
         const rule = rules[rulesIndex].rule;
         // IF section
         var ruleContainerDiv = helper.getConditionRows(rule);
@@ -311,8 +315,6 @@ window.rulesView = window.rulesView || (function  () {
       helper.hideUnMatchedSearch();
     },
     tagMatchedSearch:function(searchText) {
-      // hide all rows
-      var hideNotMatchedRuleContainers = [];
       // show all row with search text
       var dataValue = document.querySelectorAll('td[data-value*="'+searchText+'"]');
       for (let colIndex = 0; colIndex < dataValue.length; colIndex++) {
@@ -334,7 +336,7 @@ window.rulesView = window.rulesView || (function  () {
         }
       }
     },
-    resetSearch:function(){
+    resetRules:function(){
       var rulesContainer = document.getElementsByClassName('ruleContainer');
       for (let ruleIndex = 0; ruleIndex < rulesContainer.length; ruleIndex++) {
         const element = rulesContainer[ruleIndex];
@@ -343,6 +345,8 @@ window.rulesView = window.rulesView || (function  () {
           element.removeAttribute('matched');
         }
       }
+      document.getElementById('txtSearch').value = '';
+      document.getElementById('txtSearch')
     },
     download:function(rulesXML){
       var rules = [];
@@ -414,7 +418,7 @@ run();
 
   return{
     search: helper.search,
-    resetSearch: helper.resetSearch,
+    resetSearch: helper.resetRules,
     download: helper.download,
     showMessage: helper.showMessage,
     run: run,
