@@ -50,7 +50,7 @@ window.rulesView = window.rulesView || (function  () {
     conditionOperationRowHandler:function name(section, rowColor) {
       return "<tr style='background-color:"+rowColor+"'><td> <b>" +
       "<span style='text-transform:uppercase'>"+section._op + '</span>'+
-      " IF " +
+      " If " +
       section._condrule + "<br/> of the following is true"+
       "</b></td></tr>" ;
     },
@@ -65,7 +65,7 @@ window.rulesView = window.rulesView || (function  () {
       return rules;
     },
     createConditionTable:function(){ return $(
-      '<table id="conditionTable" class="table" ><thead class="table-dark"><tr>' +
+      '<table id="condition-table" class="table" ><thead class="table-dark"><tr>' +
         '<th scope="col"></th>' +
         '<th scope="col">Field Name</th>' +
         '<th scope="col">Operator</th>' +
@@ -212,7 +212,7 @@ window.rulesView = window.rulesView || (function  () {
     getConditionRows:function name(rule) {
       var ruleId = rule._id;
       var section = rule.if.section;
-      var deleteButton = $("<button type='button' class='btn btn-danger m-2'>Delete</button>");
+      var deleteButton = $("<button type='button' class='btn btn-danger m-2 float-right'>Delete</button>");
       var ruleContainerDiv = $("<div class='ruleContainer' style='margin-bottom: 36px; border: ridge;'></div>");
 
       // Field Name/ Operation / value
@@ -232,7 +232,7 @@ window.rulesView = window.rulesView || (function  () {
           currentSection = section;
         } else {
           currentSection = section[sectionIndex];
-          condition = currentSection.condition;
+          cond  ition = currentSection.condition;
         }
 
         // IF All/Any
@@ -242,21 +242,43 @@ window.rulesView = window.rulesView || (function  () {
       }
 
       deleteButton[0].addEventListener('click', function(evt){
-        var sessionId = $Utils.getURLParameter("sid");
-        var seerverUrl = $Utils.getURLParameter("surl");
-      
-        if(ruleId != '' && seerverUrl != null && sessionId != null){
-          $Utils.delete('Form_Rule__c', ruleId, seerverUrl, sessionId, function (callback, textStatus) {
-            if(textStatus == 'nocontent'){
-              window.rulesView.run();
+        $("#mi-modal").modal('show');
+        
+        helper.modalConfirm(function(confirm){
+            if(confirm){
+              var sessionId = $Utils.getURLParameter("sid");
+              var seerverUrl = $Utils.getURLParameter("surl");
+            
+              if(ruleId != '' && seerverUrl != null && sessionId != null){
+                $Utils.delete('Form_Rule__c', ruleId, seerverUrl, sessionId, function (callback, textStatus) {
+                  if(textStatus == 'nocontent'){
+                    window.rulesView.run();
+                  }
+                });
+              }
+              console.log('rule ' + ruleId + ' was deleted.');
+            }else{
+              console.log('rule ' + ruleId + ' was not deleted.');
             }
           });
-        }
       });
 
       ruleContainerDiv.prepend(deleteButton);
       return ruleContainerDiv;
     },
+    modalConfirm:function (callback){
+      
+      $("#modal-btn-yes").on("click", function(){
+        callback(true);
+        $("#mi-modal").modal('hide');
+      });
+      
+      $("#modal-btn-no").on("click", function(){
+        callback(false);
+        $("#mi-modal").modal('hide');
+      });
+    },
+    
     getRulesTable:function (rulesRecords) {
       var rules = helper.convertXMLToJSON(rulesRecords);
       var rulesContainer = $('<div></div>');

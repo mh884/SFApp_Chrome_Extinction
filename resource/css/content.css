@@ -11,6 +11,13 @@
     background-repeat: no-repeat;
 }
 
+.condition-table{
+    font-size: 11px;
+}
+
+.float-right{
+    float: right;
+}
 
 .fs-badge:hover{
     opacity: 0.9;

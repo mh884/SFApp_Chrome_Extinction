@@ -12,7 +12,9 @@
     "storage",
     "cookies",
     "https://*.salesforce.com/*",
-    "https://*.force.com/*"
+    "https://*.force.com/*",
+    "https://*.visualforce.com/*"
+
   ],
   "web_accessible_resources": [
     "*.html",
@@ -31,7 +33,7 @@
   "content_scripts": [
     {
       "run_at": "document_end",
-      "matches": ["https://*.force.com/*","https://*.salesforce.com/*"],
+      "matches": ["https://*.force.com/*","https://*.salesforce.com/*","https://*.visualforce.com/*"],
       "all_frames":false,
       "js": [
         "resource/bin/jquery-3.5.1.min.js",
