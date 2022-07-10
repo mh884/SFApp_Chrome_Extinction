@@ -245,9 +245,11 @@ window.rulesView = window.rulesView || (function  () {
         var sessionId = $Utils.getURLParameter("sid");
         var seerverUrl = $Utils.getURLParameter("surl");
       
-        if(ruleId != '' && seerverUrl != null && sessionId != null){
+        if(confirm("Are you sure you want to delete rule") && 
+              ruleId != '' && seerverUrl != null && sessionId != null){
           $Utils.delete('Form_Rule__c', ruleId, seerverUrl, sessionId, function (callback, textStatus) {
             if(textStatus == 'nocontent'){
+              evt.path[1].remove(); // Delete rule 
               window.rulesView.run();
             }
           });
@@ -325,13 +327,10 @@ window.rulesView = window.rulesView || (function  () {
     download:function(rulesXML){
       var rules = [];
       for (var index = 0; index < rulesXML.length; index++) {
-        var x2js = new X2JS();
         var xml = rulesXML[index].Rule_XML__c;
-        var document = x2js.xml2js(xml);
-        rules.push(document);
+        rules.push(xml);
       }
-      var stringify = JSON.stringify(rules);
-      var myFile = new Blob([stringify], {type: 'text/plain'});
+      var myFile = new Blob([rules], {type: 'text/plain'});
       window.URL = window.URL || window.webkitURL;
       window.open(window.URL.createObjectURL(myFile));
     },
